@@ -16,7 +16,7 @@ class Ship:
         self.moving_right = False
         self.moving_left = False
         self.x = self.rect.x
-        self.movingspeed = 1000
+        self.movingspeed = 1
     def blitme(self):
         """在指定位置绘制飞船。"""
         self.screen.blit(self.image, self.rect)
@@ -25,7 +25,6 @@ class Ship:
         if self.moving_right:
             self.x += self.movingspeed                   
         elif self.moving_left:
-            self.x -= self.movingspeed
-        
+            self.x -= self.movingspeed        
         self.x = max(0, min(self.x, self.screen_rect.right - self.rect.width))
         self.rect.x = self.x    
