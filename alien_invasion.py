@@ -60,6 +60,12 @@ class AlienInvasion:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
+    def _update_bullets(self):
+        self.bullets.update()
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
@@ -74,11 +80,9 @@ class AlienInvasion:
             # 监视键盘和鼠标事件。
             self._check_events()
             self.ship.move()
-            self.bullets.update()
+            self._update_bullets()
             self._update_screen()
-            for bullet in self.bullets.copy():
-                if bullet.rect.bottom <= 0:
-                    self.bullets.remove(bullet)
+
 
 if __name__ == '__main__':
     # 创建游戏实例并运行游戏。
