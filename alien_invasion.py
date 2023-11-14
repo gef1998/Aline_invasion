@@ -12,7 +12,14 @@ class AlienInvasion:
         """初始化游戏并创建游戏资源。"""
         pygame.init()
         self.settings = Settings()
-        self.screen = pygame.display.set_mode((self.settings.screen_height, self.settings.screen_width))
+        fullscreen_choice  = input("全屏吗？(yes or no)").lower()
+        assert fullscreen_choice in ['yes', 'no'], "无效的选项，请输入 'yes' 或 'no'"
+        if fullscreen_choice == 'no':
+            self.screen = pygame.display.set_mode((self.settings.screen_height, self.settings.screen_width))
+        if fullscreen_choice == 'yes':
+            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            self.settings.screen_width = self.screen.get_rect().width
+            self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
 
