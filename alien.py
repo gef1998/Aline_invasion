@@ -19,7 +19,9 @@ class Alien(Sprite):
 
         # 存储外星人的精确水平位置。
         self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
 
-    def blitme(self):
-        """在指定位置绘制飞船。"""
+
+    def darw(self):
+        """在指定位置绘制外星人。"""
         self.screen.blit(self.image, self.rect)
