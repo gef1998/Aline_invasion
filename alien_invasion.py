@@ -2,6 +2,7 @@
 import sys
 import pygame
 from bullet import Bullet
+from alien import Alien
 
 from settings import Settings
 from ship import Ship
@@ -24,7 +25,7 @@ class AlienInvasion:
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
-
+        self.alien = Alien(self)
 
     def _check_events(self):
         """响应鼠标和按键事件。"""
@@ -69,6 +70,7 @@ class AlienInvasion:
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
+        self.alien.blitme()
         for bullet in self.bullets.sprites():
             bullet.blit_bullet()
         # 让最近绘制的屏幕可见。
