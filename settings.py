@@ -14,3 +14,6 @@ class Settings:
 
         self.bullet_speed = 1.0
         self.bullets_allowed = 5
+
+        self.alien_speed = 0.8
+        self.fleet_drop_speed = 5
