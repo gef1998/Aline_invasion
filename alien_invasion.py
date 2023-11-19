@@ -28,7 +28,7 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
-              
+
 
     def _check_events(self):
         """响应鼠标和按键事件。"""
@@ -103,6 +103,7 @@ class AlienInvasion:
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
         self.aliens.draw(self.screen)
+
         for bullet in self.bullets.sprites():
             bullet.blit_bullet()
         # 让最近绘制的屏幕可见。
