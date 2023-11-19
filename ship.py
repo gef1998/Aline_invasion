@@ -26,7 +26,7 @@ class Ship:
     def move(self):
         if self.moving_right:
             self.x += self.settings.ship_speed
-        elif self.moving_left:
+        if self.moving_left:
             self.x -= self.settings.ship_speed
         self.x = max(0, min(self.x, self.screen_rect.right - self.rect.width))
         self.rect.x = self.x    
