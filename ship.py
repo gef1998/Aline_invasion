@@ -14,15 +14,19 @@ class Ship:
         self.image = pygame.image.load('images/ship.jpg')
         self.rect = self.image.get_rect()
           # 对于每艘新飞船，都将其放在屏幕底部的中央。
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.center_ship()
         self.moving_right = False
         self.moving_left = False
-        self.x = self.rect.x
         
     def blitme(self):
         """在指定位置绘制飞船。"""
         self.screen.blit(self.image, self.rect)
     
+    def center_ship(self):
+        """让飞船在屏幕底端居中。"""
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
+
     def move(self):
         if self.moving_right:
             self.x += self.settings.ship_speed
