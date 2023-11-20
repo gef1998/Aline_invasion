@@ -98,7 +98,13 @@ class AlienInvasion:
 
     def _update_aliens(self):
         self.aliens.update()
-        collitions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+
+        collitions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)        
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
+
+        
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
@@ -117,7 +123,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.move()
             self._update_bullets()
-            self._update_aliens()
+            self._update_aliens()   # 天呐，我发现外星人越少他移动速度越快！
             self._update_screen()
 
 
