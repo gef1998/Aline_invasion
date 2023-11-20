@@ -98,6 +98,7 @@ class AlienInvasion:
 
     def _update_aliens(self):
         self.aliens.update()
+        collitions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
