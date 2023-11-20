@@ -1,12 +1,16 @@
 
 import sys
 import pygame
+
+
 from bullet import Bullet
 from alien import Alien
 from random import randint
-
+from time import sleep
 from settings import Settings
 from ship import Ship
+from game_stats import GameStats
+
 
 class AlienInvasion:
     """管理游戏资源和行为的类"""
@@ -15,6 +19,7 @@ class AlienInvasion:
         """初始化游戏并创建游戏资源。"""
         pygame.init()
         self.settings = Settings()
+        self.stats = GameStats(self)
         fullscreen_choice  = input("全屏吗？(yes or no)").lower()
         assert fullscreen_choice in ['yes', 'no'], "无效的选项，请输入 'yes' 或 'no'"
         if fullscreen_choice == 'no':
@@ -99,6 +104,43 @@ class AlienInvasion:
     def _update_aliens(self):
         self.aliens.update()
 
+        collitions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)        
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+        
+        self._check_aliens_bottom()
+                   
+    def _ship_hit(self):
+        """响应飞船被外星人撞到。"""
+        if self.stats.ships_left <= 0:
+             self.stats.game_active = False
+             return
+        # 将ships_left减1。
+        self.stats.ships_left -= 1
+
+            # 清空余下的外星人和子弹。
+        self.aliens.empty()
+        self.bullets.empty()
+
+            # 创建一群新的外星人，并将飞船放到屏幕底端的中央。
+        self._create_fleet()
+        self.ship.center_ship()
+
+            # 暂停。
+        sleep(0.5)
+    
+    def _check_aliens_bottom(self):
+        """检查是否有外星人到达了屏幕底端。"""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                # 像飞船被撞到一样处理。
+                self._ship_hit()
+                break
+
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
@@ -114,9 +156,10 @@ class AlienInvasion:
         while True:
             # 监视键盘和鼠标事件。
             self._check_events()
-            self.ship.move()
-            self._update_bullets()
-            self._update_aliens()
+            if self.stats.game_active:
+                self.ship.move()
+                self._update_bullets()
+                self._update_aliens()   # 天呐，我发现外星人越少他移动速度越快！
             self._update_screen()
 
 
