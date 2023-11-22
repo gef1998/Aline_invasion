@@ -13,7 +13,7 @@ class Alien(Sprite):
         # 加载外星人图像并设置其rect属性
         self.image = pygame.image.load('images/alien.png')
         self.rect = self.image.get_rect()
-
+        self.screen_rect = ai_game.screen.get_rect()
         # 每个外星人最初都在屏幕左上角附近。
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height
@@ -30,7 +30,7 @@ class Alien(Sprite):
         self.screen.blit(self.image, self.rect)
 
     def _update_fleet_direction(self):
-        if self.x >= self.settings.screen_width - self.rect.width:
+        if self.x >= self.screen_rect.width - self.rect.width:
             self.fleet_direction = -1
             self.y += self.settings.fleet_drop_speed
         elif self.x <= 0:
