@@ -35,6 +35,7 @@ class AlienInvasion:
         self.fullscreen_button = Button(self, "fullscreen")
         self.fullscreen_button.msg_image_rect.y -= 100
         self.fullscreen_button.rect.y -= 100
+        self.clock = pygame.time.Clock()
 
     def _check_events(self):
         """响应鼠标和按键事件。"""
@@ -53,9 +54,11 @@ class AlienInvasion:
         """在玩家单击Play按钮时开始新游戏。
            在玩家单击fullscreen按钮时全屏。
         """
-        if self.play_button.rect.collidepoint(mouse_pos):
+        play_button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        fullscreen_button_clicked = self.fullscreen_button.rect.collidepoint(mouse_pos)
+        if play_button_clicked and not self.stats.game_active:
             self.stats.game_active = True
-        if self.fullscreen_button.rect.collidepoint(mouse_pos):
+        if fullscreen_button_clicked and not self.stats.game_active:
             Settings.is_fullscreen = True
             self.__init__()
 
@@ -171,6 +174,7 @@ class AlienInvasion:
     def run_game(self):
         """开始游戏的主循环"""
         while True:
+            self.clock.tick(144)
             # 监视键盘和鼠标事件。
             self._check_events()
             if self.stats.game_active:
