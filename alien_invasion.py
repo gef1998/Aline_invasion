@@ -58,6 +58,7 @@ class AlienInvasion:
         fullscreen_button_clicked = self.fullscreen_button.rect.collidepoint(mouse_pos)
         if play_button_clicked and not self.stats.game_active:
             self.stats.game_active = True
+            pygame.mouse.set_visible(False)
         if fullscreen_button_clicked and not self.stats.game_active:
             Settings.is_fullscreen = True
             self.__init__()
@@ -134,6 +135,7 @@ class AlienInvasion:
         """响应飞船被外星人撞到。"""
         if self.stats.ships_left <= 0:
              self.stats.game_active = False
+             pygame.mouse.set_visible(True)
              return
         # 将ships_left减1。
         self.stats.ships_left -= 1
