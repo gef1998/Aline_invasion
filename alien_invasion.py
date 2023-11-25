@@ -10,7 +10,7 @@ from time import sleep
 from settings import Settings
 from ship import Ship
 from game_stats import GameStats
-
+from button import Button
 
 class AlienInvasion:
     """管理游戏资源和行为的类"""
@@ -20,20 +20,22 @@ class AlienInvasion:
         pygame.init()
         self.settings = Settings()
         self.stats = GameStats(self)
-        fullscreen_choice  = input("全屏吗？(yes or no)").lower()
-        assert fullscreen_choice in ['yes', 'no'], "无效的选项，请输入 'yes' 或 'no'"
-        if fullscreen_choice == 'no':
+        if not self.settings.is_fullscreen:
             self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
-        if fullscreen_choice == 'yes':
+        else:
             self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-            self.settings.screen_width = self.screen.get_rect().width
-            self.settings.screen_height = self.screen.get_rect().height
+
+        self.screen_rect = self.screen.get_rect()
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
-
+        self.play_button = Button(self, "Play")
+        self.fullscreen_button = Button(self, "fullscreen")
+        self.fullscreen_button.msg_image_rect.y -= 100
+        self.fullscreen_button.rect.y -= 100
+        self.clock = pygame.time.Clock()
 
     def _check_events(self):
         """响应鼠标和按键事件。"""
@@ -44,6 +46,22 @@ class AlienInvasion:
                 self._check_keyup_events(event)
             elif event.type == pygame.KEYDOWN:         
                 self._check_keydown_events(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:  # 难道不应该是按下时按钮变形，鼠标松开时判断鼠标是否在坐标内吗？ 还有开始游戏后继续鼠标点击按钮区域还是会进行判断
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_button(mouse_pos)
+
+    def _check_button(self, mouse_pos):
+        """在玩家单击Play按钮时开始新游戏。
+           在玩家单击fullscreen按钮时全屏。
+        """
+        play_button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        fullscreen_button_clicked = self.fullscreen_button.rect.collidepoint(mouse_pos)
+        if play_button_clicked and not self.stats.game_active:
+            self.stats.game_active = True
+            pygame.mouse.set_visible(False)
+        if fullscreen_button_clicked and not self.stats.game_active:
+            Settings.is_fullscreen = True
+            self.__init__()
 
     def _check_keyup_events(self, event): 
         """响应松开。"""
@@ -72,8 +90,8 @@ class AlienInvasion:
     def _create_fleet(self):
         """ 创建外星人群。"""
         alien = Alien(self)
-        available_space_x = self.settings.screen_width - (2 * alien.rect.width)
-        available_space_y = self.settings.screen_height - (3 * alien.rect.height) - self.ship.rect.height
+        available_space_x = self.screen_rect.width - (2 * alien.rect.width)
+        available_space_y = self.screen_rect.height - (3 * alien.rect.height) - self.ship.rect.height
         number_aliens_x = available_space_x // (2 * alien.rect.width)
         number_rows = available_space_y // (2 * alien.rect.height)
         for row_number in range(number_rows):
@@ -117,6 +135,7 @@ class AlienInvasion:
         """响应飞船被外星人撞到。"""
         if self.stats.ships_left <= 0:
              self.stats.game_active = False
+             pygame.mouse.set_visible(True)
              return
         # 将ships_left减1。
         self.stats.ships_left -= 1
@@ -143,17 +162,21 @@ class AlienInvasion:
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
-        self.ship.blitme()
-        self.aliens.draw(self.screen)
-
-        for bullet in self.bullets.sprites():
-            bullet.blit_bullet()
+        if not self.stats.game_active:
+            self.play_button.draw_button()
+            self.fullscreen_button.draw_button()
+        else:
+            self.ship.blitme()
+            self.aliens.draw(self.screen)
+            for bullet in self.bullets.sprites():
+                bullet.blit_bullet()
         # 让最近绘制的屏幕可见。
         pygame.display.flip()
 
     def run_game(self):
         """开始游戏的主循环"""
         while True:
+            self.clock.tick(144)
             # 监视键盘和鼠标事件。
             self._check_events()
             if self.stats.game_active:
